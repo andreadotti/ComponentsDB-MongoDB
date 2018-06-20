@@ -14,7 +14,7 @@ conda activate componentsDB
 In one of the two terminals start mongodb indicating a directory where
 data should be stored:
 ```
-mongodb --dbpath=$PWD/data
+mongod --dbpath=$PWD/data
 ```
 Just remove the data directory if you want a clean restart
 
