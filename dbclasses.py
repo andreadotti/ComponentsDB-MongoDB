@@ -4,6 +4,7 @@
 import sys, inspect
 from uuid import uuid1, UUID
 from copy import deepcopy
+from pymongo import MongoClient
 
 
 # Basic exception for this module
@@ -147,5 +148,58 @@ def convert_all_to_dict( component_list ):
     '''
     return [ convert_component_to_dict(c) for c in active_components ]
 
-def initdb()
-def write_to_collection(colletion)
+class DataBase(object):
+    ''''
+    Interaction with MongoDB
+    '''
+    def __init__(self):
+        self.client = MongoClient()
+    
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
+
+    def connect(self):
+        '''
+        Initialize MongoDB, a local default database and collection
+        :return: collection object
+        '''
+        self.db = self.client.components
+        self.collection = self.db.example
+        return self.collection
+    
+    def close(self):
+        '''
+        Tear down
+        '''
+        self.client.close()
+
+    def write_collection(self, components):
+        '''
+        Write the list of components objects to the 
+        MongoDB collection
+        '''
+        output = convert_all_to_dict(components)
+        self.collection.insert_many(output)
+
+    def read_components(self, name):
+        '''
+        Read a component from the MongoDB collection
+        if it is a group recursively read all elements
+        :return: component object
+        '''
+        el = self.collection.find_any({'name':name})
+        if el:
+            comp = create_component(**el)
+            for subcomp in comp.components:
+                pass
+
+    def read_all(self):
+        '''
+        Read and return entire components database
+        '''
+        components = []
+        for el in self.collection.find():
+            components.append(create_component(**el))
+        for comp in components:
+            comp = resolve_reference(comp)
+        return components

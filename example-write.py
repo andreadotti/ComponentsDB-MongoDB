@@ -58,8 +58,9 @@ import json
 with open('components_dump.json','w') as f:
     json.dump(output,f)
 
-# Connect to MongoDB and create a collection
-# Start mongodb first
+db = dbclasses.DataBase
+db.connect()
+db.write_collection(dbclasses.active_components)
 from pymongo import MongoClient
 client = MongoClient()
 db = client.components
